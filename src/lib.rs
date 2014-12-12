@@ -1,19 +1,35 @@
 #[allow(dead_code)]
 #[allow(non_camel_case_types)] 
+
+/**
+ * Abstraction of libnl core functionality
+ */
 #[link(name="nl-3")]
 extern "C" {
+	// Exposed socket functions
 	fn nl_socket_alloc() -> *const nl_sock;
 	fn nl_socket_free(socket: *const nl_sock);
 	fn nl_socket_get_fd(socket: *const nl_sock) -> i32;
 	fn nl_socket_set_buffer_size(socket: *const nl_sock, rxbuf: int, txbuf: int) -> i32;
 	fn nl_connect(socket: *const nl_sock, protocol: u32) -> i32;
 	fn nl_close(socket: *const nl_sock);
+
+	// Exposed msg functions
+	fn nlmsg_alloc() -> *const nl_msg;
+	fn nlmsg_free(msg: *const nl_msg);
 }
 
+// exposed structures - these are wrapped
 struct nl_sock;
+struct nl_msg;
 
+// RSNL datatypes wrapping the libnl data structures
 pub struct socket {
-	ptr: *const nl_sock,
+	ptr: *const nl_sock
+}
+
+pub struct msg {
+	ptr: *const nl_msg
 }
 
 pub enum NetlinkProtocol {
@@ -45,7 +61,7 @@ impl socket {
 		unsafe {
 			let nlptr = nl_socket_alloc();
 			socket {
-				ptr: nlptr,
+				ptr: nlptr
 			}
 		}
 	}
@@ -72,5 +88,16 @@ impl socket {
 
 	pub fn get_fd(&self) -> i32 {
 		unsafe { nl_socket_get_fd(self.ptr) }
+	}
+}
+
+impl msg {
+	pub fn new() -> msg {
+	unsafe {
+		let nlmsg = nlmsg_alloc();
+		msg { 
+			ptr: nlmsg
+		}
+	}
 	}
 }
