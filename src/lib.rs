@@ -28,6 +28,19 @@ pub struct socket {
 	ptr: *const nl_sock
 }
 
+
+/* library version of nlmsghdr
+ * the name is altered to differentiate
+ * between the native libnl and rsnl
+ */
+pub struct rsnl_msghdr {
+	nlmsg_len: u32,
+	nlmsg_type: u16,
+	nlmsg_flags: u16,
+	nlmsg_seq: u32,
+	nlmsg_pid: u32
+}
+
 pub struct msg {
 	ptr: *const nl_msg
 }
@@ -55,6 +68,7 @@ pub enum NetlinkProtocol {
 	rdma,
 	crypto
 }
+
 
 impl socket {
 	pub fn new() -> socket {
@@ -99,5 +113,9 @@ impl msg {
 			ptr: nlmsg
 		}
 	}
+	}
+
+	pub fn free(&self) {
+		unsafe{ nlmsg_free(self.ptr); }
 	}
 }
