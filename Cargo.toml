@@ -1,0 +1,5 @@
+[package]
+
+name = "rsnl"
+version = "0.0.1"
+authors = ["Charlie FG <charlie@carrotsrc.org>"]
