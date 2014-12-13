@@ -11,8 +11,15 @@ extern "C" {
 	fn nl_socket_free(socket: *const nl_sock);
 	fn nl_socket_get_fd(socket: *const nl_sock) -> i32;
 	fn nl_socket_set_buffer_size(socket: *const nl_sock, rxbuf: int, txbuf: int) -> i32;
+	
+	fn nl_socket_set_local_port(socket: *const nl_sock, port: u32);
+	fn nl_socket_get_local_port(socket: *const nl_sock);
+
 	fn nl_connect(socket: *const nl_sock, protocol: u32) -> i32;
 	fn nl_close(socket: *const nl_sock);
+
+	fn nl_socket_set_cb(socket: *const nl_sock, cb: *const nl_cb);
+	fn nl_socket_get_cb(socket: *const nl_sock) -> nl_cb;
 
 	// Exposed msg functions
 	fn nlmsg_alloc() -> *const nl_msg;
@@ -22,6 +29,7 @@ extern "C" {
 // exposed structures - these are wrapped
 struct nl_sock;
 struct nl_msg;
+struct nl_cb;
 
 // RSNL datatypes wrapping the libnl data structures
 pub struct socket {
