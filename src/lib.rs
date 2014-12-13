@@ -111,6 +111,14 @@ impl socket {
 	pub fn get_fd(&self) -> i32 {
 		unsafe { nl_socket_get_fd(self.ptr) }
 	}
+
+	pub fn get_local_port(&self) -> u32 {
+		unsafe { nl_socket_get_local_port(self.ptr) }
+	}
+
+	pub fn set_local_port(&self, port: u32) {
+		unsafe { nl_socket_set_local_port(self.ptr, port) }
+	}
 }
 
 impl msg {
