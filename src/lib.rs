@@ -13,7 +13,7 @@ extern "C" {
 	fn nl_socket_set_buffer_size(socket: *const nl_sock, rxbuf: int, txbuf: int) -> i32;
 	
 	fn nl_socket_set_local_port(socket: *const nl_sock, port: u32);
-	fn nl_socket_get_local_port(socket: *const nl_sock);
+	fn nl_socket_get_local_port(socket: *const nl_sock) -> u32;
 
 	fn nl_connect(socket: *const nl_sock, protocol: u32) -> i32;
 	fn nl_close(socket: *const nl_sock);
@@ -21,9 +21,13 @@ extern "C" {
 	fn nl_socket_set_cb(socket: *const nl_sock, cb: *const nl_cb);
 	fn nl_socket_get_cb(socket: *const nl_sock) -> nl_cb;
 
+	// Exposed socket transceiver
+	fn nl_send_simple(socket: *const nl_sock, msg_type: int, flags: int, buf: *const u8, size: int) -> int;
 	// Exposed msg functions
 	fn nlmsg_alloc() -> *const nl_msg;
 	fn nlmsg_free(msg: *const nl_msg);
+
+
 }
 
 // exposed structures - these are wrapped
@@ -74,7 +78,8 @@ pub enum NetlinkProtocol {
 	scsitransport,
 	ecryptfs,
 	rdma,
-	crypto
+	crypto,
+	zu= 30
 }
 
 
@@ -118,6 +123,10 @@ impl socket {
 
 	pub fn set_local_port(&self, port: u32) {
 		unsafe { nl_socket_set_local_port(self.ptr, port) }
+	}
+
+	pub fn send_simple(&self, msg_type: int, flags: int, buf: *const u8, size: int) -> int {
+		unsafe { nl_send_simple(self.ptr, msg_type, flags, buf, size) }
 	}
 }
 

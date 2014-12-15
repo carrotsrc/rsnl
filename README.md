@@ -6,6 +6,8 @@ The plan is to structure it out similar to libnl (core, route, genl, nf), but ap
 
 I'm not doing mass bind generation because I'm going to methodically work through the API to craft the library.
 
+So far exposed send_simple and tested against a kernel module successfully
+
 
 #### License
 
