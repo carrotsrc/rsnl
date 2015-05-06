@@ -1,5 +1,10 @@
+#![feature(libc)]
+
 #[allow(dead_code)]
 #[allow(non_camel_case_types)] 
+
+extern crate libc;
+use libc::c_int;
 
 /**
  * Abstraction of libnl core functionality
@@ -10,7 +15,7 @@ extern "C" {
 	fn nl_socket_alloc() -> *const nl_sock;
 	fn nl_socket_free(socket: *const nl_sock);
 	fn nl_socket_get_fd(socket: *const nl_sock) -> i32;
-	fn nl_socket_set_buffer_size(socket: *const nl_sock, rxbuf: int, txbuf: int) -> i32;
+	fn nl_socket_set_buffer_size(socket: *const nl_sock, rxbuf: c_int, txbuf: c_int) -> i32;
 	
 	fn nl_socket_set_local_port(socket: *const nl_sock, port: u32);
 	fn nl_socket_get_local_port(socket: *const nl_sock) -> u32;
@@ -22,7 +27,7 @@ extern "C" {
 	fn nl_socket_get_cb(socket: *const nl_sock) -> nl_cb;
 
 	// Exposed socket transceiver
-	fn nl_send_simple(socket: *const nl_sock, msg_type: int, flags: int, buf: *const u8, size: int) -> int;
+	fn nl_send_simple(socket: *const nl_sock, msg_type: c_int, flags: c_int, buf: *const u8, size: c_int) -> i32;
 	// Exposed msg functions
 	fn nlmsg_alloc() -> *const nl_msg;
 	fn nlmsg_free(msg: *const nl_msg);
@@ -99,7 +104,7 @@ impl socket {
 		}
 	}
 
-	pub fn set_buffer_size(&self, rxbuf: int, txbuf: int) -> i32 {
+	pub fn set_buffer_size(&self, rxbuf: c_int, txbuf: c_int) -> i32 {
 		unsafe {
 			nl_socket_set_buffer_size(self.ptr, rxbuf, txbuf)
 		}
@@ -125,7 +130,7 @@ impl socket {
 		unsafe { nl_socket_set_local_port(self.ptr, port) }
 	}
 
-	pub fn send_simple(&self, msg_type: int, flags: int, buf: *const u8, size: int) -> int {
+	pub fn send_simple(&self, msg_type: c_int, flags: c_int, buf: *const u8, size: c_int) -> c_int {
 		unsafe { nl_send_simple(self.ptr, msg_type, flags, buf, size) }
 	}
 }
