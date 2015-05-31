@@ -36,8 +36,11 @@ extern "C" {
 }
 
 // exposed structures - these are wrapped
+#[repr(C)]
 struct nl_sock;
+#[repr(C)]
 struct nl_msg;
+#[repr(C)]
 struct nl_cb;
 
 // RSNL datatypes wrapping the libnl data structures
