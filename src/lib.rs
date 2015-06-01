@@ -1,7 +1,7 @@
 #![feature(libc)]
 
-#[allow(dead_code)]
-#[allow(non_camel_case_types)] 
+#![allow(dead_code)]
+#![allow(non_camel_case_types)]
 
 extern crate libc;
 use libc::c_int;
@@ -36,8 +36,11 @@ extern "C" {
 }
 
 // exposed structures - these are wrapped
+#[repr(C)]
 struct nl_sock;
+#[repr(C)]
 struct nl_msg;
+#[repr(C)]
 struct nl_cb;
 
 // RSNL datatypes wrapping the libnl data structures
