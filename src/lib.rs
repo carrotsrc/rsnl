@@ -4,7 +4,8 @@
 #![allow(non_camel_case_types)]
 
 extern crate libc;
-use libc::c_int;
+use libc::{c_int, size_t, c_void};
+use std::mem;
 
 /**
  * Abstraction of libnl core functionality
@@ -28,9 +29,11 @@ extern "C" {
 
 	// Exposed socket transceiver
 	fn nl_send_simple(socket: *const nl_sock, msg_type: c_int, flags: c_int, buf: *const u8, size: c_int) -> i32;
+
 	// Exposed msg functions
 	fn nlmsg_alloc() -> *const nl_msg;
 	fn nlmsg_free(msg: *const nl_msg);
+	fn nlmsg_append(msg: *const nl_msg, data: *const c_void, len: size_t, pad: c_int) -> i32;
 
 
 }
@@ -133,8 +136,8 @@ impl socket {
 		unsafe { nl_socket_set_local_port(self.ptr, port) }
 	}
 
-	pub fn send_simple(&self, msg_type: c_int, flags: c_int, buf: *const u8, size: c_int) -> c_int {
-		unsafe { nl_send_simple(self.ptr, msg_type, flags, buf, size) }
+	pub fn send_simple(&self, msg_type: c_int, flags: c_int, buf: *const u8, size: c_int) -> i32 {
+		unsafe { nl_send_simple(self.ptr, msg_type, flags, buf, size) as i32 }
 	}
 }
 
@@ -151,4 +154,11 @@ impl msg {
 	pub fn free(&self) {
 		unsafe{ nlmsg_free(self.ptr); }
 	}
+
+    pub fn append<T>(&self, data: &T, len: u32, pad: i32) -> i32 {
+        unsafe { 
+            let vptr: *const c_void = mem::transmute(data);
+            nlmsg_append(self.ptr, vptr, len as size_t, pad as c_int) as i32 
+        }
+    }
 }
