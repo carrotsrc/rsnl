@@ -27,7 +27,7 @@ extern "C" {
 	fn nl_socket_set_cb(socket: *const nl_sock, cb: *const nl_cb);
 	fn nl_socket_get_cb(socket: *const nl_sock) -> nl_cb;
 
-	// Exposed socket transceiver
+	// Exposed socket transceivers
 	fn nl_send_simple(socket: *const nl_sock, msg_type: c_int, flags: c_int, buf: *const u8, size: c_int) -> i32;
 
 	// Exposed msg functions
@@ -83,9 +83,7 @@ pub enum NetlinkProtocol {
 	ecryptfs,
 	rdma,
 	crypto,
-	zu= 30
 }
-
 
 impl socket {
 	pub fn new() -> socket {
@@ -109,8 +107,9 @@ impl socket {
 		}
 	}
 
-	pub fn connect(&self, protocol: NetlinkProtocol) -> i32 {
-		unsafe { nl_connect(self.ptr, protocol as u32) }
+	pub fn connect(&self, protocol: u32) -> i32 {
+        
+		unsafe { nl_connect(self.ptr, protocol) }
 	}
 
 	pub fn close(&self) {

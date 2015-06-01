@@ -5,7 +5,7 @@ extern crate rsnl;
 
 fn main() {
 	let nls = rsnl::socket::new();
-	nls.connect(rsnl::NetlinkProtocol::zu);
+	nls.connect(30);
 	let buf = 0;
 
 	nls.send_simple(0xfa, 0, &buf, 0);
