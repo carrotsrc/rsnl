@@ -35,6 +35,7 @@ extern "C" {
 	fn nlmsg_free(msg: *const nl_msg);
 	fn nlmsg_append(msg: *const nl_msg, data: *const c_void, len: size_t, pad: c_int) -> i32;
     fn nlmsg_put(msg: *const nl_msg, pid: u32, seq: u32, mtype: c_int, payload: c_int, flags: c_int) -> *const nlmsghdr;
+    fn nlmsg_datalen(nlh: *const nlmsghdr) -> i32;
 
 
 }
@@ -69,6 +70,7 @@ pub struct rsnl_msghdr {
 
 pub struct msg {
 	ptr: *const nl_msg,
+    hdr: Option<*const nlmsghdr>,
 }
 
 pub enum NetlinkProtocol {
@@ -147,13 +149,13 @@ impl socket {
 impl msg {
 
 	pub fn new() -> msg {
-
-	unsafe {
-		let nlmsg = nlmsg_alloc();
-		msg { 
-			ptr: nlmsg
-		}
-	}
+        unsafe {
+            let nlmsg = nlmsg_alloc();
+            msg { 
+                ptr: nlmsg,
+                hdr: None
+            }
+        }
 	}
 
 
@@ -168,9 +170,27 @@ impl msg {
         }
     }
 
-    pub fn put(&self, pid: u32, seq: u32, mtype: i32, payload: i32, flags: i32) {
+    pub fn put(&mut self, pid: u32, seq: u32, mtype: i32, payload: i32, flags: i32) -> bool {
         unsafe {
-            nlmsg_put(self.ptr, pid, seq, mtype as c_int, payload as c_int, flags as c_int);
+            let hdr = nlmsg_put(self.ptr, pid, seq, mtype as c_int, payload as c_int, flags as c_int);
+
+            match hdr as i32 {
+                0x0 => false,
+                _ => {
+                    self.hdr = Some(hdr);
+                    true
+                }
+            }
+        }
+    }
+
+    pub fn data_len(&self) -> i32 {
+
+        match self.hdr {
+            None => 0,
+            Some(hdr) => {
+                unsafe { nlmsg_datalen(hdr) }
+            }
         }
     }
 }
