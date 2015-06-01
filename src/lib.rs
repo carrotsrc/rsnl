@@ -56,18 +56,6 @@ pub struct socket {
 }
 
 
-/* library version of nlmsghdr
- * the name is altered to differentiate
- * between the native libnl and rsnl
- */
-pub struct rsnl_msghdr {
-	nlmsg_len: u32,
-	nlmsg_type: u16,
-	nlmsg_flags: u16,
-	nlmsg_seq: u32,
-	nlmsg_pid: u32
-}
-
 pub struct msg {
 	ptr: *const nl_msg,
     hdr: Option<*const nlmsghdr>,
