@@ -34,6 +34,7 @@ extern "C" {
 	fn nlmsg_alloc() -> *const nl_msg;
 	fn nlmsg_free(msg: *const nl_msg);
 	fn nlmsg_append(msg: *const nl_msg, data: *const c_void, len: size_t, pad: c_int) -> i32;
+    fn nlmsg_put(msg: *const nl_msg, pid: u32, seq: u32, mtype: c_int, payload: c_int, flags: c_int) -> *const nlmsghdr;
 
 
 }
@@ -45,6 +46,8 @@ struct nl_sock;
 struct nl_msg;
 #[repr(C)]
 struct nl_cb;
+#[repr(C)]
+struct nlmsghdr;
 
 // RSNL datatypes wrapping the libnl data structures
 pub struct socket {
@@ -65,7 +68,7 @@ pub struct rsnl_msghdr {
 }
 
 pub struct msg {
-	ptr: *const nl_msg
+	ptr: *const nl_msg,
 }
 
 pub enum NetlinkProtocol {
@@ -142,7 +145,9 @@ impl socket {
 }
 
 impl msg {
+
 	pub fn new() -> msg {
+
 	unsafe {
 		let nlmsg = nlmsg_alloc();
 		msg { 
@@ -150,6 +155,7 @@ impl msg {
 		}
 	}
 	}
+
 
 	pub fn free(&self) {
 		unsafe{ nlmsg_free(self.ptr); }
@@ -159,6 +165,12 @@ impl msg {
         unsafe { 
             let vptr: *const c_void = mem::transmute(data);
             nlmsg_append(self.ptr, vptr, len as size_t, pad as c_int) as i32 
+        }
+    }
+
+    pub fn put(&self, pid: u32, seq: u32, mtype: i32, payload: i32, flags: i32) {
+        unsafe {
+            nlmsg_put(self.ptr, pid, seq, mtype as c_int, payload as c_int, flags as c_int);
         }
     }
 }

@@ -14,4 +14,6 @@ fn main() {
     let code = b"Foobar\0";
     let r = msg.append(&code, 7, 0);
     println!("Value: {}", r);
+
+    msg.put(1,1,3,101,0);
 }
