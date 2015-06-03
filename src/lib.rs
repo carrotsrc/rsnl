@@ -37,7 +37,8 @@ extern "C" {
     fn nlmsg_put(msg: *const nl_msg, pid: u32, seq: u32, mtype: c_int, payload: c_int, flags: c_int) -> *const nlmsghdr;
     fn nlmsg_datalen(nlh: *const nlmsghdr) -> i32;
     fn nlmsg_next(nlh: *const nlmsghdr, remaining: *const i32) -> *const nlmsghdr;
-
+    fn nlmsg_inherit(nlh: *const nlmsghdr) -> *const nl_msg;
+    fn nlmsg_hdr(msg: *const nl_msg) -> *const nlmsghdr;
 
 }
 
@@ -167,5 +168,19 @@ pub fn msg_data_len(msg: &NetlinkMessage) -> i32 {
             unsafe { nlmsg_datalen(hdr) }
         }
     }
+}
+
+pub fn msg_inherit(msg: &NetlinkMessage) -> NetlinkMessage {
+    if msg.hdr == None {
+        return msg_alloc();
+    }
+
+    let mut m = NetlinkMessage {
+        ptr: unsafe { nlmsg_inherit(msg.hdr.unwrap()) },
+        hdr: None
+    };
+
+    m.hdr = Some( unsafe {nlmsg_hdr(msg.ptr)} );
+    m
 }
 
