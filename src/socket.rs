@@ -76,3 +76,19 @@ pub fn send_simple<T>(sock: &NetlinkSocket, msg_type: i32, flags: i32, buf: &T, 
     }
 }
 
+
+pub mod genl {
+
+    #[repr(C)]
+    struct genlmsghdr;
+
+    #[link(name="nl-genl-3")]
+    extern "C" {
+        // Exposed msg functions
+        fn genl_connect(sock: *const ::socket::nl_sock);
+    }
+
+    pub fn connect(sock: &::socket::NetlinkSocket) {
+        unsafe { genl_connect(sock.ptr); }
+    }
+}

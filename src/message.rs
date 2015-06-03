@@ -19,7 +19,7 @@ extern "C" {
     fn nlmsg_next(nlh: *const nlmsghdr, remaining: *const i32) -> *const nlmsghdr;
     fn nlmsg_inherit(nlh: *const nlmsghdr) -> *const nl_msg;
     fn nlmsg_hdr(msg: *const nl_msg) -> *const nlmsghdr;
-
+    fn nlmsg_ok(msg: *const nl_msg) -> u32;
 }
 
 pub struct NetlinkMessage {
