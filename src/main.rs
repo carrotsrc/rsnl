@@ -4,21 +4,21 @@ extern crate rsnl;
 
 
 fn main() {
-	let nls = rsnl::socket::new();
-	nls.connect(30);
+	let mut nls = rsnl::sock_alloc();
+    rsnl::connect(&mut nls, 30);
 	let buf = 0;
 
-	nls.send_simple(0xfa, 0, &buf, 0);
+	rsnl::send_simple(&nls, 0xfa, 0, &buf, 0);
 
-    let mut msg = rsnl::msg::new();
+    let mut msg = rsnl::msg_alloc();
     let code = b"Foobar\0";
-    let r = msg.append(&code, 7, 0);
+    let r = rsnl::msg_append(&mut msg, &code, 7, 0);
     println!("Value: {}", r);
 
-    match msg.put(1,1,3,0,0) {
+    match rsnl::msg_put(&mut msg, 1,1,3,0,0) {
         true => println!("Added header"),
         false => println!("Failed to add header")
     }
 
-    println!("payload len: {}", msg.data_len());
+    println!("payload len: {}", rsnl::msg_data_len(&msg));
 }
