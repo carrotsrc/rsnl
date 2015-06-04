@@ -2,12 +2,14 @@ extern crate rsnl;
 
 fn main() {
 	let mut nls = rsnl::socket::alloc();
-    rsnl::socket::genl::connect(&mut nls);
+    rsnl::socket::connect(&mut nls, 30);
 	let buf = 0;
 
 	rsnl::socket::send_simple(&nls, 0xfa, 0, &buf, 0);
 
+
     let mut msg = rsnl::message::alloc();
+
     let code = b"Foobar\0";
     let r = rsnl::message::append(&mut msg, &code, 7, 0);
     println!("Value: {}", r);

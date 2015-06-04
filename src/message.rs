@@ -4,9 +4,9 @@ use libc::{c_int, size_t, c_void};
 use std::mem;
 
 #[repr(C)]
-struct nl_msg;
+pub struct nl_msg;
 #[repr(C)]
-struct nlmsghdr;
+pub struct nlmsghdr;
 
 #[link(name="nl-3")]
 extern "C" {
@@ -81,4 +81,14 @@ pub fn inherit(msg: &NetlinkMessage) -> NetlinkMessage {
 
     m.hdr = Some( unsafe {nlmsg_hdr(msg.ptr)} );
     m
+}
+
+pub mod expose {
+    pub fn nl_msg_ptr(msg: &mut ::message::NetlinkMessage) -> *const ::message::nl_msg {
+        msg.ptr
+    }
+
+    pub fn nlmsghdr_ptr(msg: &mut ::message::NetlinkMessage) -> Option<*const ::message::nlmsghdr> {
+        msg.hdr
+    }
 }

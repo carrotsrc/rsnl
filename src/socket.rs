@@ -5,9 +5,9 @@ use std::mem;
 
 
 #[repr(C)]
-struct nl_sock;
+pub struct nl_sock;
 #[repr(C)]
-struct nl_cb;
+pub struct nl_cb;
 
 #[link(name="nl-3")]
 extern "C" {
@@ -31,7 +31,7 @@ extern "C" {
 }
 
 pub struct NetlinkSocket {
-    ptr: *const nl_sock,
+    pub ptr: *const nl_sock,
 }
 
 
@@ -76,19 +76,9 @@ pub fn send_simple<T>(sock: &NetlinkSocket, msg_type: i32, flags: i32, buf: &T, 
     }
 }
 
-
-pub mod genl {
-
-    #[repr(C)]
-    struct genlmsghdr;
-
-    #[link(name="nl-genl-3")]
-    extern "C" {
-        // Exposed msg functions
-        fn genl_connect(sock: *const ::socket::nl_sock);
+pub mod expose {
+    pub fn nl_sock_ptr(sock: &mut ::socket::NetlinkSocket) -> *const ::socket::nl_sock {
+        sock.ptr
     }
 
-    pub fn connect(sock: &::socket::NetlinkSocket) {
-        unsafe { genl_connect(sock.ptr); }
-    }
 }
