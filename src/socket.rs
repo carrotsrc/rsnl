@@ -28,6 +28,10 @@ extern "C" {
 
 	// Exposed socket transceivers
 	fn nl_send_simple(socket: *const nl_sock, msg_type: c_int, flags: c_int, buf: *const c_void, size: c_int) -> i32;
+    fn nl_sendto(socket: *const nl_sock, buf: *const c_void, size: c_int) -> i32;
+    fn nl_send(socket: *const nl_sock, msg: *const ::message::nl_msg) -> i32;
+    fn nl_send_auto(socket: *const nl_sock, msg: *const ::message::nl_msg) -> i32;
+    fn nl_sendmsg(socket: *const nl_sock, msg: *const ::message::nl_msg, hdr: *const ::message::nlmsghdr) -> i32;
 }
 
 pub struct NetlinkSocket {
@@ -74,6 +78,30 @@ pub fn send_simple<T>(sock: &NetlinkSocket, msg_type: i32, flags: i32, buf: &T, 
         let vptr: *const c_void = mem::transmute(buf);
         nl_send_simple(sock.ptr, msg_type, flags, vptr, size) as i32 
     }
+}
+
+pub fn sendto<T>(sock: &NetlinkSocket, buf: &T, size: u32) -> i32 {
+    unsafe {
+        let vptr: *const c_void = mem::transmute(buf);
+        nl_sendto(sock.ptr, vptr, size as c_int)
+    }
+}
+
+pub fn send(sock: &NetlinkSocket, mut msg: ::message::NetlinkMessage) -> i32 {
+    unsafe { nl_send(sock.ptr, ::message::expose::nl_msg_ptr(&mut msg)) }
+}
+
+pub fn send_auto(sock: &NetlinkSocket, mut msg: ::message::NetlinkMessage) -> i32 {
+    unsafe { nl_send_auto(sock.ptr, ::message::expose::nl_msg_ptr(&mut msg)) }
+}
+
+pub fn sendmsg(sock: &NetlinkSocket, mut msg: ::message::NetlinkMessage) -> i32 {
+    let hdr = match ::message::expose::nlmsghdr_ptr(&mut msg) {
+        Some(hdr) => hdr,
+        _ => return -22
+    };
+
+    unsafe { nl_sendmsg(sock.ptr, ::message::expose::nl_msg_ptr(&mut msg), hdr) }
 }
 
 pub mod expose {
