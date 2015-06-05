@@ -6,6 +6,12 @@ The plan is to structure it out similar to libnl (core, route, genl, nf), but ap
 
 Recently cleaning the API -- dropped struct impl in favour of functions, where the context of the function is the module namespace. This feels a lot cleaner.
 
+#### Dependencies
+
+* libnl-3
+
 #### License
 
-Out of respect to Libnl, the library is licensed under LGPL
+**MIT**
+
+(Originally it was LGPL out of respect to libnl but really it's just a small layer, so in retrospect LGPL seems a bit heavy weight.)
