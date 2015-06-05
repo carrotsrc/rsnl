@@ -84,11 +84,11 @@ pub fn inherit(msg: &NetlinkMessage) -> NetlinkMessage {
 }
 
 pub mod expose {
-    pub fn nl_msg_ptr(msg: &mut ::message::NetlinkMessage) -> *const ::message::nl_msg {
+    pub fn nl_msg_ptr(msg: &::message::NetlinkMessage) -> *const ::message::nl_msg {
         msg.ptr
     }
 
-    pub fn nlmsghdr_ptr(msg: &mut ::message::NetlinkMessage) -> Option<*const ::message::nlmsghdr> {
+    pub fn nlmsghdr_ptr(msg: &::message::NetlinkMessage) -> Option<*const ::message::nlmsghdr> {
         msg.hdr
     }
 }
