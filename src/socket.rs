@@ -96,10 +96,7 @@ pub fn send_auto(sock: &NetlinkSocket, mut msg: ::message::NetlinkMessage) -> i3
 }
 
 pub fn sendmsg(sock: &NetlinkSocket, mut msg: ::message::NetlinkMessage) -> i32 {
-    let hdr = match ::message::expose::nlmsghdr_ptr(&mut msg) {
-        Some(hdr) => hdr,
-        _ => return -22
-    };
+    let hdr = ::message::expose::nlmsghdr_ptr(&mut msg);
 
     unsafe { nl_sendmsg(sock.ptr, ::message::expose::nl_msg_ptr(&mut msg), hdr) }
 }

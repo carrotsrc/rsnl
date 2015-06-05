@@ -24,13 +24,14 @@ extern "C" {
 
 pub struct NetlinkMessage {
 	ptr: *const nl_msg,
-    hdr: Option<*const nlmsghdr>,
+    hdr: *const nlmsghdr,
 }
 
 pub fn alloc() -> NetlinkMessage {
+    let mptr = unsafe { nlmsg_alloc() };
     NetlinkMessage {
-        ptr: unsafe { nlmsg_alloc() },
-        hdr: None
+        ptr: mptr,
+        hdr: unsafe { nlmsg_hdr(mptr) }
     }
 }
 
@@ -46,41 +47,31 @@ pub fn append<T>(msg: &mut NetlinkMessage, data: &T, len: u32, pad: i32) -> i32 
 }
 
 pub fn put(msg: &mut NetlinkMessage, pid: u32, seq: u32, mtype: i32, payload: i32, flags: i32) -> bool {
-    unsafe {
-        let hdr = nlmsg_put(msg.ptr, pid, seq, mtype as c_int, payload as c_int, flags as c_int);
+
+        let hdr = unsafe { nlmsg_put(msg.ptr, pid, seq, mtype as c_int, payload as c_int, flags as c_int) };
 
         match hdr as i32 {
             0x0 => false,
             _ => {
-                msg.hdr = Some(hdr);
                 true
             }
         }
-    }
 }
 
 pub fn data_len(msg: &NetlinkMessage) -> i32 {
 
-    match msg.hdr {
-        None => 0,
-        Some(hdr) => {
-            unsafe { nlmsg_datalen(hdr) }
-        }
-    }
+            unsafe { nlmsg_datalen(msg.hdr) }
 }
 
 pub fn inherit(msg: &NetlinkMessage) -> NetlinkMessage {
-    if msg.hdr == None {
-        return alloc();
+
+    let mptr = unsafe { nlmsg_inherit(msg.hdr) };
+
+    NetlinkMessage {
+        ptr: mptr,
+        hdr: unsafe { nlmsg_hdr(mptr) }
     }
 
-    let mut m = NetlinkMessage {
-        ptr: unsafe { nlmsg_inherit(msg.hdr.unwrap()) },
-        hdr: None
-    };
-
-    m.hdr = Some( unsafe {nlmsg_hdr(msg.ptr)} );
-    m
 }
 
 pub mod expose {
@@ -88,7 +79,7 @@ pub mod expose {
         msg.ptr
     }
 
-    pub fn nlmsghdr_ptr(msg: &::message::NetlinkMessage) -> Option<*const ::message::nlmsghdr> {
+    pub fn nlmsghdr_ptr(msg: &::message::NetlinkMessage) -> *const ::message::nlmsghdr {
         msg.hdr
     }
 }
