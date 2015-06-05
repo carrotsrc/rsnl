@@ -104,8 +104,12 @@ pub fn sendmsg(sock: &NetlinkSocket, mut msg: ::message::NetlinkMessage) -> i32 
     unsafe { nl_sendmsg(sock.ptr, ::message::expose::nl_msg_ptr(&mut msg), hdr) }
 }
 
+pub fn recvmsg(sock: &NetlinkSocket, fptr: fn()->i32) -> i32 {
+    4
+}
+
 pub mod expose {
-    pub fn nl_sock_ptr(sock: &mut ::socket::NetlinkSocket) -> *const ::socket::nl_sock {
+    pub fn nl_sock_ptr(sock: &::socket::NetlinkSocket) -> *const ::socket::nl_sock {
         sock.ptr
     }
 
