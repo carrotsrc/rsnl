@@ -1,6 +1,6 @@
 extern crate libc;
 
-use libc::{c_int};
+use libc::{c_int, c_void};
 
 
 #[repr(C)]
@@ -10,6 +10,7 @@ pub struct nl_cb;
 extern "C" {
 	// Exposed socket functions
 	fn nl_cb_alloc(kind: c_int) -> *const nl_cb;
+    fn nl_cb_set(cb: *const nl_cb, ctype: i32, kind: i32,func: fn(msg: *const ::message::nl_msg, arg: *const c_void)->i32, args: *const c_void);
 }
 
 pub enum Kind {
@@ -50,6 +51,6 @@ pub fn alloc(kind: Kind) -> Option<NetlinkCallback> {
     
     match cbptr as i32 {
         0x0 => None,
-        _  => Some(NetlinkCallback{ptr: cbptr})
+        _   => Some(NetlinkCallback{ptr: cbptr})
     }
 }

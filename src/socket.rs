@@ -37,9 +37,12 @@ pub struct NetlinkSocket {
 }
 
 
-pub fn alloc() -> NetlinkSocket {
-    NetlinkSocket {
-        ptr: unsafe { nl_socket_alloc() },
+pub fn alloc() -> Option<NetlinkSocket> {
+    let ptr = unsafe { nl_socket_alloc() };
+
+    match ptr as isize {
+    0x0 => None,
+    _ => Some (NetlinkSocket { ptr: ptr })
     }
 }
 

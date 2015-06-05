@@ -1,7 +1,8 @@
 extern crate rsnl;
 
 fn main() {
-	let mut nls = rsnl::socket::alloc();
+	let mut nls = rsnl::socket::alloc().unwrap();
+
     rsnl::socket::connect(&mut nls, 30);
 	let buf = 0;
 
