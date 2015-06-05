@@ -27,11 +27,15 @@ pub struct NetlinkMessage {
     hdr: *const nlmsghdr,
 }
 
-pub fn alloc() -> NetlinkMessage {
+pub fn alloc() -> Option<NetlinkMessage> {
     let mptr = unsafe { nlmsg_alloc() };
-    NetlinkMessage {
-        ptr: mptr,
-        hdr: unsafe { nlmsg_hdr(mptr) }
+    match mptr as isize {
+        0x0 => None,
+        _   => Some ( NetlinkMessage {
+                        ptr: mptr,
+                        hdr: unsafe { nlmsg_hdr(mptr) }
+                        }
+                    )
     }
 }
 

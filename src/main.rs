@@ -9,7 +9,7 @@ fn main() {
 	rsnl::socket::send_simple(&nls, 0xfa, 0, &buf, 0);
 
 
-    let mut msg = rsnl::message::alloc();
+    let mut msg = rsnl::message::alloc().unwrap();
 
     let code = b"Foobar\0";
     let r = rsnl::message::append(&mut msg, &code, 7, 0);
