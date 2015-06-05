@@ -6,6 +6,7 @@
 pub mod message;
 pub mod socket;
 pub mod callback;
+pub mod attributes;
 
 /**
  * Abstraction of libnl core functionality
