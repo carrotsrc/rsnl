@@ -2,6 +2,7 @@ extern crate libc;
 
 use libc::{c_int, size_t, c_void};
 use std::mem;
+use std::marker::PhantomData;
 
 #[repr(C)]
 pub struct nl_msg;
@@ -20,6 +21,7 @@ extern "C" {
     fn nlmsg_inherit(nlh: *const nlmsghdr) -> *const nl_msg;
     fn nlmsg_hdr(msg: *const nl_msg) -> *const nlmsghdr;
     fn nlmsg_ok(msg: *const nl_msg) -> u32;
+    fn nlmsg_data(msg: *const nlmsghdr) -> *const c_void;
 }
 
 pub struct NetlinkMessage {
@@ -27,16 +29,45 @@ pub struct NetlinkMessage {
     hdr: *const nlmsghdr,
 }
 
+pub struct NetlinkData <T> {
+    ptr: Option<*const c_void>,
+    phantom: PhantomData<T>
+}
+
+impl <T> NetlinkData <T> {
+
+    pub fn get(&self) -> Option<&T> {
+        match self.ptr {
+        None => None,
+        _ => {
+            let p = &self.ptr;
+            Some( unsafe { mem::transmute(p) } )
+            }
+        }
+    }
+
+    pub fn set(&mut self, data: *const c_void) {
+        match self.ptr {
+            None    => self.ptr = Some(data),
+            _       =>  return
+        }
+    }
+}
+
+pub fn contain(ptr: *const nl_msg) -> Option<NetlinkMessage> {
+    match ptr as isize {
+        0x0 => None,
+        _   => Some ( 
+            NetlinkMessage {
+                ptr: ptr,
+                hdr: unsafe { nlmsg_hdr(ptr) }
+            })
+    }
+}
+
 pub fn alloc() -> Option<NetlinkMessage> {
     let mptr = unsafe { nlmsg_alloc() };
-    match mptr as isize {
-        0x0 => None,
-        _   => Some ( NetlinkMessage {
-                        ptr: mptr,
-                        hdr: unsafe { nlmsg_hdr(mptr) }
-                        }
-                    )
-    }
+    contain(mptr)
 }
 
 pub fn free(msg: NetlinkMessage) {
@@ -75,6 +106,16 @@ pub fn inherit(msg: &NetlinkMessage) -> NetlinkMessage {
         ptr: mptr,
         hdr: unsafe { nlmsg_hdr(mptr) }
     }
+
+}
+
+pub fn data<T>(msg: &NetlinkMessage, container: &mut NetlinkData<T>) {
+
+    unsafe {
+        let vptr = nlmsg_data(msg.hdr);
+        container.set(vptr);
+    }
+
 
 }
 
