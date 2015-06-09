@@ -10,7 +10,20 @@ extern "C" {
 }
 
 
-fn put<T>(msg: &mut NetlinkMessage, atype: i32, len: u32, data: &NetlinkData<T>) -> i32 {
+pub enum Type {
+    Unspec,
+    U8,
+    U16,
+    U32,
+    U64,
+    String,
+    Flag,
+    Msecs,
+    Nested,
+    __Max
+}
+
+pub fn put<T>(msg: &mut NetlinkMessage, atype: Type, len: u32, data: &NetlinkData<T>) -> i32 {
     let vptr = match data.to_vptr() {
         None => return -1,
         Some(ptr) => ptr
