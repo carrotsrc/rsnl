@@ -1,3 +1,4 @@
+#[macro_use]
 extern crate rsnl;
 
 fn main() {
@@ -30,7 +31,8 @@ fn main() {
 
     println!("Data: {}", val.unwrap());
 
-    let p = rsnl::attribute::put(&mut msg, rsnl::attribute::Type::U32, std::mem::size_of::<u32>() as u32, &nldata);
+
+    let p = NlaPutU32!(&mut msg, 0, &nldata);
     println!("Put: {}", p);
 
 

@@ -23,7 +23,7 @@ pub enum Type {
     __Max
 }
 
-pub fn put<T>(msg: &mut NetlinkMessage, atype: Type, len: u32, data: &NetlinkData<T>) -> i32 {
+pub fn put<T>(msg: &mut NetlinkMessage, atype: i32, len: u32, data: &NetlinkData<T>) -> i32 {
     let vptr = match data.to_vptr() {
         None => return -1,
         Some(ptr) => ptr
@@ -31,6 +31,43 @@ pub fn put<T>(msg: &mut NetlinkMessage, atype: Type, len: u32, data: &NetlinkDat
     unsafe{ nla_put(::message::expose::nl_msg_ptr(msg), atype as c_int, len as c_int, vptr) }
 }
 
+#[macro_export]
+macro_rules! NlaPutU8 {
+        ($msg:expr, $atype: expr, $data:expr) => {
+            rsnl::attribute::put($msg, $atype, std::mem::size_of::<u8>() as u32, $data)
+        }
+}
 
+#[macro_export]
+macro_rules! NlaPutU16 {
+        ($msg:expr, $atype: expr, $data:expr) => {
+            rsnl::attribute::put($msg, $atype, std::mem::size_of::<u16>() as u32, $data)
+        }
+}
 
+#[macro_export]
+macro_rules! NlaPutU32 {
+        ($msg:expr, $atype: expr, $data:expr) => {
+            rsnl::attribute::put($msg, $atype, std::mem::size_of::<u32>() as u32, $data)
+        }
+}
 
+#[macro_export]
+macro_rules! NlaPutU64 {
+        ($msg:expr, $atype: expr, $data:expr) => {
+            rsnl::attribute::put($msg, $atype, std::mem::size_of::<u64>() as u32, $data)
+        }
+}
+
+#[macro_export]
+macro_rules! NlaPutMsec {
+        ($msg:expr, $atype: expr, $msecs:expr) => {
+            rsnl::attribute::put($msg, $atype, std::mem::size_of::<u64>() as u32, $msecs)
+        }
+}
+
+// TODO:
+// NlaPutAddr!()
+// NlaPutData!()
+// NlaPutFlag!()
+// NlaPutString!()
