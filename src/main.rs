@@ -27,9 +27,6 @@ fn main() {
 
     let d: u32 =  4004;
     nldata.set(&d);
-    let val = nldata.get();
-
-    println!("Data: {}", val.unwrap());
 
 
     let q = NlaPutU32!(&mut msg, 0, &nldata);
@@ -40,4 +37,9 @@ fn main() {
 
     println!("payload len: {}", rsnl::message::data_len(&msg));
 
+    let f : rsnl::message::NetlinkData<u32> =  rsnl::message::NetlinkData::with_data(&d);
+
+    let val = f.get();
+
+    println!("Data: {}", val.unwrap());
 }

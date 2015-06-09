@@ -43,7 +43,7 @@ impl <T> NetlinkData <T> {
         }
     }
 
-    pub fn with_data<D>(data: &D) -> NetlinkData<D> {
+    pub fn with_data<D>(data: &D) -> NetlinkData<T> {
         NetlinkData {
             ptr: Some(unsafe{ mem::transmute(data) }),
             phantom: PhantomData
