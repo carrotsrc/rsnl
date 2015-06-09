@@ -4,7 +4,7 @@ This is the beginning of a rust library for interacting with netlink via libnl a
 
 The plan is to structure it out similar to the library (core, route, genl, nf), but appropiately abstracted in ways that make it geared more toward being a rust interface. The separation means, like libnl, you only link with what you use.
 
-This library is an exercise in building a clean interface that still feels familiar. It is function orientated, like the C library, with minimal use of structs. The functions and structs are split into submodules, taking advantage of namespaces so `nlmsg_alloc()` becomes `rsnl::message::alloc()`. The convention is making the name namespace the relevent context so allocating a new socket becomes `rsnl::socket::alloc()`. With that said, The design is still in flux with experiments in different ideas.
+This library is an exercise in building a clean interface that still feels familiar. It is function orientated, like the C library, with minimal use of structs. The functions and structs are split into submodules, taking advantage of namespaces so `nlmsg_alloc()` becomes `rsnl::message::alloc()`. The convention being to make the namespace the relevent context so allocating a new socket becomes `rsnl::socket::alloc()`. With that said, The design is still in flux with experiments in different ideas.
 
 One thing that is experimented with is avoid handling any voids (a-*void*, if you will), so hiding 'em away behind the API with casting performed by generics.
 
