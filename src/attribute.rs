@@ -1,7 +1,8 @@
 extern crate libc;
 
+use std::mem;
 use libc::{c_int, c_void};
-use ::message::{NetlinkMessage, NetlinkData, nl_msg};
+use ::message::{NetlinkMessage, nl_msg};
 use ::message::expose::{nl_msg_ptr};
 
 
@@ -25,12 +26,11 @@ pub enum Type {
     __Max
 }
 
-pub fn put<T>(msg: &mut NetlinkMessage, atype: i32, len: u32, data: &NetlinkData<T>) -> i32 {
-    let vptr = match data.to_vptr() {
-        None => return -1,
-        Some(ptr) => ptr
-    };
-    unsafe{ nla_put(::message::expose::nl_msg_ptr(msg), atype as c_int, len as c_int, vptr) }
+pub fn put<T>(msg: &mut NetlinkMessage, atype: i32, len: u32, data: &T) -> i32 {
+    unsafe{ 
+        let vptr: *const c_void = mem::transmute(data);
+        nla_put(::message::expose::nl_msg_ptr(msg), atype as c_int, len as c_int, vptr) 
+    }
 }
 
 pub fn put_no_data(msg: &mut NetlinkMessage, atype: i32) -> i32 {
