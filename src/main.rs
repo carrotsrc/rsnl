@@ -21,4 +21,13 @@ fn main() {
     }
 
     println!("payload len: {}", rsnl::message::data_len(&msg));
+
+    let mut nldata: rsnl::message::NetlinkData<i32> = rsnl::message::NetlinkData::new();
+
+    let d = 4004;
+    nldata.set(&d);
+    let val = nldata.get();
+
+    println!("Data: {}", val.unwrap());
+
 }

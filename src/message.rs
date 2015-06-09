@@ -36,21 +36,44 @@ pub struct NetlinkData <T> {
 
 impl <T> NetlinkData <T> {
 
+    pub fn new() -> NetlinkData<T> {
+        NetlinkData {
+            ptr: None,
+            phantom: PhantomData
+        }
+    }
+
     pub fn get(&self) -> Option<&T> {
         match self.ptr {
         None => None,
-        _ => {
-            let p = &self.ptr;
-            Some( unsafe { mem::transmute(p) } )
+        Some(vptr) => {
+            Some( unsafe { mem::transmute(vptr) } )
             }
         }
     }
 
-    pub fn set(&mut self, data: *const c_void) {
+    pub fn set(&mut self, data: &T) {
+        match self.ptr {
+
+        None => {
+            let p: *const c_void =  unsafe{ mem::transmute(data) };
+            self.ptr = Some( p );
+            },
+
+         _   => return
+
+        }
+    }
+
+    pub fn from_vptr(&mut self, data: *const c_void) {
         match self.ptr {
             None    => self.ptr = Some(data),
             _       =>  return
         }
+    }
+
+    pub fn to_vptr(&self) -> Option<*const c_void> {
+        self.ptr
     }
 }
 
@@ -113,7 +136,7 @@ pub fn data<T>(msg: &NetlinkMessage, container: &mut NetlinkData<T>) {
 
     unsafe {
         let vptr = nlmsg_data(msg.hdr);
-        container.set(vptr);
+        container.from_vptr(vptr);
     }
 
 
