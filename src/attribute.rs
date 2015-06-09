@@ -2,11 +2,13 @@ extern crate libc;
 
 use libc::{c_int, c_void};
 use ::message::{NetlinkMessage, NetlinkData, nl_msg};
+use ::message::expose::{nl_msg_ptr};
 
 
 #[link(name="nl-3")]
 extern "C" {
     fn nla_put(msg: *const nl_msg, attrtype: c_int, datalen: c_int, data: *const c_void) -> i32;
+    fn nla_put_nested(msg: *const nl_msg, attrtype: c_int, nested: *const nl_msg) -> i32;
 }
 
 
@@ -33,6 +35,10 @@ pub fn put<T>(msg: &mut NetlinkMessage, atype: i32, len: u32, data: &NetlinkData
 
 pub fn put_no_data(msg: &mut NetlinkMessage, atype: i32) -> i32 {
     unsafe{ nla_put(::message::expose::nl_msg_ptr(msg), atype as c_int, 0, 0x0 as *const c_void) }
+}
+
+pub fn put_nested(msg: &mut NetlinkMessage, atype: i32, nested: &NetlinkMessage) -> i32 {
+    unsafe { nla_put_nested(nl_msg_ptr(msg), atype as c_int, nl_msg_ptr(nested)) }
 }
 
 #[macro_export]
