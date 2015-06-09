@@ -31,6 +31,10 @@ pub fn put<T>(msg: &mut NetlinkMessage, atype: i32, len: u32, data: &NetlinkData
     unsafe{ nla_put(::message::expose::nl_msg_ptr(msg), atype as c_int, len as c_int, vptr) }
 }
 
+pub fn put_no_data(msg: &mut NetlinkMessage, atype: i32) -> i32 {
+    unsafe{ nla_put(::message::expose::nl_msg_ptr(msg), atype as c_int, 0, 0x0 as *const c_void) }
+}
+
 #[macro_export]
 macro_rules! NlaPutU8 {
         ($msg:expr, $atype: expr, $data:expr) => {
@@ -63,6 +67,13 @@ macro_rules! NlaPutU64 {
 macro_rules! NlaPutMsec {
         ($msg:expr, $atype: expr, $msecs:expr) => {
             rsnl::attribute::put($msg, $atype, std::mem::size_of::<u64>() as u32, $msecs)
+        }
+}
+
+#[macro_export]
+macro_rules! NlaPutFlag {
+        ($msg:expr, $atype: expr) => {
+            rsnl::attribute::put_no_data($msg, $atype)
         }
 }
 

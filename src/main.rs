@@ -32,8 +32,12 @@ fn main() {
     println!("Data: {}", val.unwrap());
 
 
+    let q = NlaPutU32!(&mut msg, 0, &nldata);
+    println!("Put: {}", q);
+    println!("payload len: {}", rsnl::message::data_len(&msg));
     let p = NlaPutU32!(&mut msg, 0, &nldata);
     println!("Put: {}", p);
 
+    println!("payload len: {}", rsnl::message::data_len(&msg));
 
 }
