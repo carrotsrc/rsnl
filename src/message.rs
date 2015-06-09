@@ -43,6 +43,20 @@ impl <T> NetlinkData <T> {
         }
     }
 
+    pub fn with_data<D>(data: &D) -> NetlinkData<D> {
+        NetlinkData {
+            ptr: Some(unsafe{ mem::transmute(data) }),
+            phantom: PhantomData
+        }
+    }
+
+    pub fn with_vptr(data: *const c_void) -> NetlinkData<T> {
+        NetlinkData {
+            ptr: Some(data),
+            phantom: PhantomData
+        }
+    }
+
     pub fn get(&self) -> Option<&T> {
         match self.ptr {
         None => None,
