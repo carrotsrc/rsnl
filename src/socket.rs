@@ -1,11 +1,10 @@
-extern crate libc;
-
 use libc::{c_int, c_void};
 use std::mem;
 
-
 #[repr(C)]
-pub struct nl_sock;
+pub struct nl_sock {
+    _unused: [u8; 0],
+}
 
 #[link(name="nl-3")]
 extern "C" {

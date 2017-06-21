@@ -1,5 +1,3 @@
-extern crate libc;
-
 use std::mem;
 use libc::{c_int, c_void};
 use ::message::{NetlinkMessage, nl_msg};
