@@ -1,13 +1,15 @@
-extern crate libc;
-
 use libc::{c_int, size_t, c_void};
 use std::mem;
 use std::marker::PhantomData;
 
 #[repr(C)]
-pub struct nl_msg;
+pub struct nl_msg {
+    _unused: [u8; 0],
+}
 #[repr(C)]
-pub struct nlmsghdr;
+pub struct nlmsghdr {
+    _unused: [u8; 0],
+}
 
 #[link(name="nl-3")]
 extern "C" {

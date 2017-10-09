@@ -1,16 +1,15 @@
-extern crate libc;
-
 use libc::{c_int, c_void};
 
-
 #[repr(C)]
-pub struct nl_cb;
+pub struct nl_cb {
+    _unused: [u8; 0],
+}
 
 #[link(name="nl-3")]
 extern "C" {
 	// Exposed socket functions
 	fn nl_cb_alloc(kind: c_int) -> *const nl_cb;
-    fn nl_cb_set(cb: *const nl_cb, ctype: i32, kind: i32,func: fn(msg: *const ::message::nl_msg, arg: *const c_void)->i32, args: *const c_void);
+    fn nl_cb_set(cb: *const nl_cb, ctype: i32, kind: i32, func: extern "C" fn(msg: *const ::message::nl_msg, arg: *const c_void)->i32, args: *const c_void);
 }
 
 pub enum Kind {

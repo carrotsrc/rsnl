@@ -3,3 +3,6 @@
 name = "rsnl"
 version = "0.0.2"
 authors = ["Charlie FG <charlie@carrotsrc.org>"]
+
+[dependencies]
+libc = "*"
